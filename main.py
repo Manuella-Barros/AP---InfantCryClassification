@@ -1,31 +1,24 @@
-import tensorflow as tf
 from pathlib import Path
+from sklearn.model_selection import train_test_split
 
 # Caminho para a pasta principal contendo subpastas (cada subpasta é uma classe)
 data_dir = Path("dataset_donateacry_corpus")
-default_seed = 123  # Define uma semente para garantir a reprodutibilidade
+file_paths = [] # vetor com o caminho dos arquivos de áudio
+labels = [] # vetor com as labels dos arquivos de áudio
 
-# Cria o dataset de treinamento (80%)
-train_ds = tf.keras.utils.audio_dataset_from_directory(
-    directory=data_dir,
-    labels="inferred",  # infere as classes a partir dos nomes das subpastas
-    validation_split=0.2, # divide 20% para validação/teste e sobra 80% para treinamento
-    subset="training",
-    seed=default_seed,  # define uma semente para garantir divisão reproduzível
-    output_sequence_length=16000,  # a rede neural precisa receber as entradas de mesma duração, então serve para ajustar a duração dos áudios (em samples)
-    batch_size=32 # quantos audios por batch (lote) serão processados de cada vez
-)
+# Coleta todos os arquivos de áudio e suas classes (nomes das pastas)
+for class_dir in data_dir.iterdir():
+    if class_dir.is_dir():
+        for audio_file in class_dir.glob("*.wav"):
+            file_paths.append(audio_file)
+            labels.append(class_dir.name)
 
-# Cria o dataset de validação/teste (20%)
-val_ds = tf.keras.utils.audio_dataset_from_directory(
-    directory=data_dir,
-    labels="inferred",
-    validation_split=0.2,
-    subset="validation",
-    seed=default_seed,
-    output_sequence_length=16000,
-    batch_size=32
-)
+# Divide entre treino e teste
+# O X é o audio e y é a classe
+X_train, X_test, y_train, y_test = train_test_split(file_paths, labels, test_size=0.2, stratify=labels, random_state=42)
 
-print(f"Número de batches de treinamento: {train_ds}")
-print(f"Número de batches de validação: {val_ds}")
+# print(f"file_paths: {file_paths}")
+# print(f"labels: {labels}")
+print(f"Número de arquivos de treino: {len(X_train)}")
+print(f"Número de arquivos de teste: {len(X_test)}")
+print(f"Classes únicas: {set(labels)}")
