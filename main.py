@@ -1,5 +1,6 @@
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from data_augmentation import augmented_train_dataset
 
 # Caminho para a pasta principal contendo subpastas (cada subpasta é uma classe)
 data_dir = Path("dataset_donateacry_corpus")
@@ -14,11 +15,19 @@ for class_dir in data_dir.iterdir():
             labels.append(class_dir.name)
 
 # Divide entre treino e teste
-# O X é o audio e y é a classe
-X_train, X_test, y_train, y_test = train_test_split(file_paths, labels, test_size=0.2, stratify=labels, random_state=42)
+# O x é o audio e y é a classe
+x_train, x_test, y_train, y_test = train_test_split(file_paths, labels, test_size=0.2, stratify=labels, random_state=42)
+
+print(f"Número de arquivos de treino: {len(x_train)}")
+print(f"Número de arquivos de teste: {len(x_test)}")
+print(f"Classes únicas: {set(labels)}")
+
+# Gera os dados aumentados e atualiza os conjuntos de treino
+x_train, y_train = augmented_train_dataset(x_train, y_train)
 
 # print(f"file_paths: {file_paths}")
 # print(f"labels: {labels}")
-print(f"Número de arquivos de treino: {len(X_train)}")
-print(f"Número de arquivos de teste: {len(X_test)}")
+print(f"Dataset Augmentado: ")
+print(f"Número de arquivos de treino: {len(x_train)}")
+print(f"Número de arquivos de teste: {len(x_test)}")
 print(f"Classes únicas: {set(labels)}")
