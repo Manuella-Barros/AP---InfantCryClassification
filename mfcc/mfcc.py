@@ -17,7 +17,7 @@ def get_mfcc_from_file(audio_file):
     delta2_mfccs = librosa.feature.delta(mfccs, order=2)
     delta2_mfccs_transposta = delta2_mfccs.T
 
-    # JUNTANDO OS 3 ARRAYS (MFCCs, deltas e delta-deltas) em um único array 2D empilhando verticalmente ==================================================
+    # JUNTANDO OS 3 ARRAYS (MFCCs, deltas e delta-deltas) em um único array 2D empilhando horizontalmente =================================================
     mfccs_concateneted = np.concatenate((mfccs_transposta, delta_mfccs_transposta, delta2_mfccs_transposta), axis=1)
     return mfccs_concateneted
 
