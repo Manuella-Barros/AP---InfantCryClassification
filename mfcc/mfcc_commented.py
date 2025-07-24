@@ -31,8 +31,11 @@ delta2_mfccs_transposta = delta2_mfccs.T  # Transpõe o array para de (n_mfcc, n
 print(f"Delta_mfccs shape: {delta_mfccs.shape}")
 print(f"Delta2_mfccs shape: {delta2_mfccs.shape}")
 
-# JUNTANDO OS 3 ARRAYS (MFCCs, deltas e delta-deltas) em um único array 2D empilhando verticalmente ======================================================
-mfccs_concateneted = np.concatenate((mfccs_transposta, delta_mfccs_transposta, delta2_mfccs_transposta), axis=0)
+## JUNTANDO OS 3 ARRAYS (MFCCs, deltas e delta-deltas) em um único array 2D empilhando horzizontalmente ====================================================
+# o axis=1 indica que estamos concatenando ao longo das colunas (horizontalmente).
+# pq horizontalmente? pq estamos adicionando mais características (deltas e delta-deltas) aos MFCCs. então deve adicionar o numero de conlunas
+# cada uma tem 13 features (colunas), então no final teremos 39 colunas (13 MFCCs + 13 deltas + 13 delta-deltas).
+mfccs_concateneted = np.concatenate((mfccs_transposta, delta_mfccs_transposta, delta2_mfccs_transposta), axis=1)
 print(f"mfccs_concateneted shape: {mfccs_concateneted.shape}")
 
 ## POR QUE TRANSPOR? ========================================================

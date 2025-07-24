@@ -18,7 +18,7 @@ def get_mfcc_from_file(audio_file):
     delta2_mfccs_transposta = delta2_mfccs.T
 
     # JUNTANDO OS 3 ARRAYS (MFCCs, deltas e delta-deltas) em um único array 2D empilhando verticalmente ==================================================
-    mfccs_concateneted = np.concatenate((mfccs_transposta, delta_mfccs_transposta, delta2_mfccs_transposta), axis=0)
+    mfccs_concateneted = np.concatenate((mfccs_transposta, delta_mfccs_transposta, delta2_mfccs_transposta), axis=1)
     return mfccs_concateneted
 
 def get_mfcc_from_file_list(audio_file_list):
