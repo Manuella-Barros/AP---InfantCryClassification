@@ -1,8 +1,11 @@
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from data_augmentation import augmented_train_dataset
-from mfcc.mfcc import get_mfcc_from_file_list, get_mfcc_from_file
+from mfcc.mfcc import get_mfcc_from_file_list
 from models.mlp import mlp
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
 
 ## PEGA E AJUSTA OS DADOS INICIAIS =============================================
 # Caminho para a pasta principal contendo subpastas (cada subpasta é uma classe)
@@ -27,14 +30,15 @@ x_train, x_test, y_train, y_test = train_test_split(file_paths, labels, test_siz
 
 ## APLICA O DATA AUGMENTATION NOS AUDIOS DE TREINAMENTO ========================
 # # Gera os dados aumentados e atualiza os conjuntos de treino
-x_train, y_train = augmented_train_dataset(x_train, y_train)
+
+x_train, y_train = augmented_train_dataset(x_train, y_train, target_size_per_class=305)
 
 # print(f"file_paths: {file_paths}")
 # print(f"labels: {labels}")
-# print(f"Dataset Augmentado: ")
-# print(f"Número de arquivos de treino: {len(x_train)}")
-# print(f"Número de arquivos de teste: {len(x_test)}")
-# print(f"Classes únicas: {set(labels)}")
+print(f"Dataset Augmentado: ")
+print(f"Número de arquivos de treino: {len(x_train)}")
+print(f"Número de arquivos de teste: {len(x_test)}")
+print(f"Classes únicas: {set(labels)}")
 
 ## EXTRAI OS MFCCS DOS ARQUIVOS DE ÁUDIO =======================================
 x_train_mfcc = get_mfcc_from_file_list(x_train)
@@ -44,3 +48,15 @@ print(f"MFCCs de treino: {len(x_train_mfcc)}")
 print(f"MFCCs de teste: {len(x_test_mfcc)}")
 
 mlp(x_train_mfcc, y_train, x_test_mfcc, y_test)
+
+assert len(set(x_train).intersection(set(x_test))) == 0
+
+# Distribuição de classes
+plt.figure(figsize=(10,4))
+plt.subplot(121)
+plt.hist(y_train, bins=5)
+plt.title('Treino')
+plt.subplot(122)
+plt.hist(y_test, bins=5)
+plt.title('Validação')
+plt.show()

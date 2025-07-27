@@ -1,8 +1,15 @@
 from keras.models import Sequential
 from keras.layers import Dense
-from keras.layers import GlobalAveragePooling1D
+from keras.layers import Flatten
+from keras.layers import Dropout
+from keras.metrics import Precision, Recall
 from keras.callbacks import EarlyStopping
 from keras.utils import pad_sequences
+from sklearn.utils import class_weight
+from sklearn.metrics import confusion_matrix
+from sklearn.preprocessing import LabelEncoder
+import seaborn as sns
+import numpy as np
 import sklearn.preprocessing as sk_preprocessing
 
 def mlp(X_train, y_train, X_val, y_val):
@@ -14,9 +21,11 @@ def mlp(X_train, y_train, X_val, y_val):
     ## CRIA O MODELO SEQUENCIAL, que é uma pilha linear de camadas. ============
     model = Sequential([
         Dense(128, activation='relu', input_shape=(302, 39)),
+        Dropout(0.3),  # <--- Adiciona dropout
         Dense(64, activation='relu'),
+        Dropout(0.2),  # <--- Adiciona dropout
         Dense(32, activation='relu'),
-        GlobalAveragePooling1D(),
+        Flatten(),
         Dense(5, activation='softmax')
     ])
 
@@ -30,9 +39,17 @@ def mlp(X_train, y_train, X_val, y_val):
     ## EARLY STOPPING ==========================================================
     early_stop = EarlyStopping(
         monitor='val_loss', 
-        patience=3, 
+        patience=2,  # número de épocas sem melhoria antes de parar o treinamento
         restore_best_weights=True
     )
+
+    # Calcular pesos das classes
+    class_weights = class_weight.compute_class_weight(
+        'balanced',
+        classes=np.unique(y_train),
+        y=y_train
+    )
+    class_weights = dict(enumerate(class_weights))
 
     ## TREINA O MODELO =========================================================
     print("Treinando o modelo...")
@@ -42,9 +59,14 @@ def mlp(X_train, y_train, X_val, y_val):
         validation_data=(x_val_norm, y_val_norm), 
         epochs=10,
         batch_size= 32,
-        callbacks=[early_stop]
+        callbacks=[early_stop],
+        class_weight={0:1, 1:1.5, 2:1.5, 3:1.3, 4:1.2}
     )
     print("history:", history.history)
+
+    y_pred = model.predict(x_val_norm).argmax(axis=1)
+    cm = confusion_matrix(y_val_norm, y_pred)
+    sns.heatmap(cm, annot=True, fmt='d')
 
     ## SALVA O MODELO =========================================================
     # model.save("mlp_model.keras")
@@ -53,15 +75,15 @@ def mlp(X_train, y_train, X_val, y_val):
     # model = load_model("mlp_model.keras")
 
 def normalize_data(X_train, y_train, X_val, y_val):
-    ## PADRONIZA O TAMANHO DOS VETORES DE ENTRADA ==============================
+    ## PADRONIZA O TAMANHO DOS VETORES DE ENTRADA
     max_len = 302
-
+    
     X_train = pad_sequences(X_train, maxlen=max_len, padding='post', dtype='float32')
     X_val = pad_sequences(X_val, maxlen=max_len, padding='post', dtype='float32')
 
-    ## PADRONIZA AS CLASSES ====================================================
-    encoder = sk_preprocessing.LabelEncoder()
-    y_train = encoder.fit_transform(y_train)
+    ## PADRONIZA AS CLASSES - CORREÇÃO AQUI
+    encoder = LabelEncoder()
+    y_train = encoder.fit_transform(y_train)  # Converte textos para números (0, 1, 2...)
     y_val = encoder.transform(y_val)
-
+    
     return X_train, y_train, X_val, y_val
