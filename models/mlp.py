@@ -3,12 +3,23 @@ from keras.layers import Dense, GlobalAveragePooling1D
 from keras.callbacks import EarlyStopping
 from keras.utils import pad_sequences
 import sklearn.preprocessing as sk_preprocessing
+from sklearn.utils.class_weight import compute_class_weight
+import numpy as np
 
 def mlp(X_train, y_train, X_val, y_val):
     print("Iniciando o treinamento do modelo MLP...")
 
     ## PADRONIZA O TAMANHO OS DADOS DE ENTRADA =================================
     x_train_norm, y_train_norm, x_val_norm, y_val_norm = normalize_data(X_train, y_train, X_val, y_val)
+
+    ## CALCULA OS PESOS DAS CLASSES ===========================================
+    class_weights = compute_class_weight(
+        class_weight='balanced',
+        classes=np.unique(y_train_norm),
+        y=y_train_norm
+    )
+    class_weights_dict = dict(enumerate(class_weights))
+    print("Pesos das classes:", class_weights_dict)
 
     ## CRIA O MODELO SEQUENCIAL, que é uma pilha linear de camadas. ============
     model = Sequential([
@@ -41,7 +52,8 @@ def mlp(X_train, y_train, X_val, y_val):
         validation_data=(x_val_norm, y_val_norm), 
         epochs=10,
         batch_size= 32,
-        callbacks=[early_stop]
+        callbacks=[early_stop],
+        class_weight=class_weights_dict
     )
     print("history:", history.history)
 

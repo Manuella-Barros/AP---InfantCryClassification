@@ -4,6 +4,8 @@ from keras.layers import GlobalAveragePooling1D
 from keras.callbacks import EarlyStopping
 from keras.utils import pad_sequences
 import sklearn.preprocessing as sk_preprocessing
+from sklearn.utils.class_weight import compute_class_weight
+import numpy as np
 
 ## Versao com os comentários de explicação do código
 
@@ -25,6 +27,17 @@ def mlp(X_train, y_train, X_val, y_val):
 
     ## PADRONIZA O TAMANHO OS DADOS DE ENTRADA =================================
     x_train_norm, y_train_norm, x_val_norm, y_val_norm = normalize_data(X_train, y_train, X_val, y_val)
+
+    ## CALCULA OS PESOS DAS CLASSES ===========================================
+    # A função compute_class_weight calcula pesos para cada classe em um problema de classificação desequilibrado. Ela calcula um peso proporcionalmente inverso à frequência da classe. Quanto menos amostras a classe tem, maior será seu peso.
+
+    class_weights = compute_class_weight(
+        class_weight='balanced', # 'balanced' significa que os pesos serão calculados de forma a equilibrar as classes
+        classes=np.unique(y_train_norm), # garante que os pesos sejam calculados exatamente para as classes que estão presentes no treino.
+        y=y_train_norm #vetor com os rótulos das amostras de treino
+    )
+    class_weights_dict = dict(enumerate(class_weights)) # {0: 0.5, 1: 1.0, 2: 2.0, 3: 0.7, 4: 1.5}
+    print("Pesos das classes:", class_weights_dict)
 
     ## CRIA O MODELO SEQUENCIAL, que é uma pilha linear de camadas. ============
     model = Sequential([ # Cria uma rede neural sequencial, camada por camada.
@@ -64,7 +77,8 @@ def mlp(X_train, y_train, X_val, y_val):
         validation_data=(x_val_norm, y_val_norm), 
         epochs=10, # Número de vezes que o modelo passa por todo o conjunto de dados de treinamento.
         batch_size= 32, # Tamanho do lote, ou seja, o número de amostras que o modelo processa antes de atualizar os pesos.
-        callbacks=[early_stop]
+        callbacks=[early_stop],
+        class_weight=class_weights_dict # Pesos das classes para lidar com o desbalanceamento de classes
     )
     print("history:", history.history)
 
