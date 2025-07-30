@@ -3,7 +3,6 @@ from keras.layers import Dense, GlobalAveragePooling1D
 from keras.callbacks import EarlyStopping
 from keras.utils import pad_sequences
 import sklearn.preprocessing as sk_preprocessing
-import matplotlib.pyplot as plt
 
 def mlp(X_train, y_train, X_val, y_val):
     print("Iniciando o treinamento do modelo MLP...")
@@ -46,15 +45,12 @@ def mlp(X_train, y_train, X_val, y_val):
     )
     print("history:", history.history)
 
-    plt.title('Historico de Treinamento')
+    ## AVALIA O MODELO =========================================================
+    print("Avaliação do modelo:")
+    y_pred = model.predict(x_val_norm).argmax(axis=1)
 
-    plt.plot(history.history['accuracy'], label='train_accuracy', )
-    plt.plot(history.history['val_accuracy'], label='val_accuracy')
-    plt.plot(history.history['loss'], label='train_loss')
-    plt.plot(history.history['val_loss'], label='val_loss')
-    plt.legend() 
-    plt.xlabel('Epocas')
-    plt.show()
+    # retorna as classes reiais e as classes previstas
+    return y_val_norm, y_pred
 
     ## SALVA O MODELO =========================================================
     # model.save("mlp_model.keras")
