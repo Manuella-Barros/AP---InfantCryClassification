@@ -1,8 +1,13 @@
 from pathlib import Path
+import sys
+# diz pro python procurar os modulos a partir da raiz
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+
 from sklearn.model_selection import train_test_split
 from data_augmentation import augmented_train_dataset
 from mfcc.mfcc import get_mfcc_from_file_list
 from models.mlp import mlp
+from models.cnn import cnn
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
@@ -32,7 +37,6 @@ x_train, x_test, y_train, y_test = train_test_split(file_paths, labels, test_siz
 
 ## APLICA O DATA AUGMENTATION NOS AUDIOS DE TREINAMENTO ========================
 # # Gera os dados aumentados e atualiza os conjuntos de treino
-
 x_train, y_train = augmented_train_dataset(x_train, y_train, target_size_per_class=305)
 
 # print(f"file_paths: {file_paths}")
@@ -51,6 +55,7 @@ print(f"MFCCs de teste: {len(x_test_mfcc)}")
 
 # retorna as classes reiais e as classes previstas
 y_true_classes, y_pred_classes = mlp(x_train_mfcc, y_train, x_test_mfcc, y_test)
+# y_true_classes, y_pred_classes = cnn(x_train_mfcc, y_train, x_test_mfcc, y_test)
 
 assert len(set(x_train).intersection(set(x_test))) == 0
 

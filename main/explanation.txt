@@ -1,0 +1,10 @@
+No arquivo "code_with_class_weight":
+    - É utilizado a função "compute_class_weight" no treinamento dos modelos para equilibrar os pesos das classes desequilibradas
+    - Realiza o "data augmentation" para todos os registros para manter e desequilibrio que será resolvido com o topico anterior
+
+
+No arquivo "code_without":
+    - Não utiliza a função "compute_class_weight" pois equilibra as classes fazendo o "data augmentation" para todos menos o hungry que é o com mais registros
+
+
+Os dois equilibram as classes de qualquer forma, mas a gente quer testar pra ver se tem diferença
