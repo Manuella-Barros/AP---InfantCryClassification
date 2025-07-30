@@ -9,7 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 
 ## PEGA E AJUSTA OS DADOS INICIAIS =============================================
 # Caminho para a pasta principal contendo subpastas (cada subpasta é uma classe)
-data_dir = Path("dataset_donateacry_corpus")
+data_dir = Path("Baby Cry Pattern Archive")
 file_paths = [] # vetor com o caminho dos arquivos de áudio
 labels = [] # vetor com as labels dos arquivos de áudio
 
