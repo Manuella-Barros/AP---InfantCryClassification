@@ -10,7 +10,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelEncoder
 import seaborn as sns
 import numpy as np
-import sklearn.preprocessing as sk_preprocessing
 
 def mlp(X_train, y_train, X_val, y_val):
     print("Iniciando o treinamento do modelo MLP...")
@@ -64,9 +63,11 @@ def mlp(X_train, y_train, X_val, y_val):
     )
     print("history:", history.history)
 
+    ## AVALIA O MODELO =========================================================
+    print("Avaliação do modelo:")
     y_pred = model.predict(x_val_norm).argmax(axis=1)
-    cm = confusion_matrix(y_val_norm, y_pred)
-    sns.heatmap(cm, annot=True, fmt='d')
+
+    return y_val_norm, y_pred
 
     ## SALVA O MODELO =========================================================
     # model.save("mlp_model.keras")

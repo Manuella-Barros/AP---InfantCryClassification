@@ -6,6 +6,8 @@ from models.mlp import mlp
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from helpers.generate_classes_distributions import generate_classes_distributions
+from helpers.generate_confusion_matrix import generate__confusion_matrix
 
 ## PEGA E AJUSTA OS DADOS INICIAIS =============================================
 # Caminho para a pasta principal contendo subpastas (cada subpasta é uma classe)
@@ -47,16 +49,15 @@ x_test_mfcc = get_mfcc_from_file_list(x_test)
 print(f"MFCCs de treino: {len(x_train_mfcc)}")
 print(f"MFCCs de teste: {len(x_test_mfcc)}")
 
-mlp(x_train_mfcc, y_train, x_test_mfcc, y_test)
+# retorna as classes reiais e as classes previstas
+y_true_classes, y_pred_classes = mlp(x_train_mfcc, y_train, x_test_mfcc, y_test)
 
 assert len(set(x_train).intersection(set(x_test))) == 0
 
+# Matrix de confusão
+generate__confusion_matrix(y_true_classes, y_pred_classes)
+
 # Distribuição de classes
-plt.figure(figsize=(10,4))
-plt.subplot(121)
-plt.hist(y_train, bins=5)
-plt.title('Treino')
-plt.subplot(122)
-plt.hist(y_test, bins=5)
-plt.title('Validação')
+generate_classes_distributions(y_train, y_test)
+
 plt.show()
