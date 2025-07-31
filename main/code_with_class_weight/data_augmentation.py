@@ -1,13 +1,3 @@
-import librosa
-import numpy as np
-import soundfile as sf
-# manipulação de caminhos e diretórios
-import os
-
-import data_augmentation_testes as aug
-
-AUGMENTED_DIR = "dataset_augmented"
-os.makedirs(AUGMENTED_DIR, exist_ok=True)
 
 import os
 import librosa

@@ -19,11 +19,10 @@ def mlp(X_train, y_train, X_val, y_val):
 
     ## CRIA O MODELO SEQUENCIAL, que é uma pilha linear de camadas. ============
     model = Sequential([
-        Dense(128, activation='relu', input_shape=(302, 39)),
-        Dropout(0.3),  # <--- Adiciona dropout
         Dense(64, activation='relu'),
-        Dropout(0.2),  # <--- Adiciona dropout
+        Dropout(0.5),  # <--- Adiciona dropout
         Dense(32, activation='relu'),
+        Dropout(0.3),
         Flatten(),
         Dense(5, activation='softmax')
     ])
@@ -38,7 +37,7 @@ def mlp(X_train, y_train, X_val, y_val):
     ## EARLY STOPPING ==========================================================
     early_stop = EarlyStopping(
         monitor='val_loss', 
-        patience=2,  # número de épocas sem melhoria antes de parar o treinamento
+        patience=5,  # número de épocas sem melhoria antes de parar o treinamento
         restore_best_weights=True
     )
 
@@ -57,7 +56,7 @@ def mlp(X_train, y_train, X_val, y_val):
         x_train_norm, 
         y_train_norm, 
         validation_data=(x_val_norm, y_val_norm), 
-        epochs=10,
+        epochs=100,
         batch_size= 32,
         callbacks=[early_stop],
         class_weight=class_weights
@@ -68,7 +67,7 @@ def mlp(X_train, y_train, X_val, y_val):
     print("Avaliação do modelo:")
     y_pred = model.predict(x_val_norm).argmax(axis=1)
 
-    return y_val_norm, y_pred
+    return y_val_norm, y_pred, history
 
     ## SALVA O MODELO =========================================================
     # model.save("mlp_model.keras")

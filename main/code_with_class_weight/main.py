@@ -1,3 +1,5 @@
+# COM CLASS WEIGHT
+
 from pathlib import Path
 import sys
 # diz pro python procurar os modulos a partir da raiz
@@ -9,10 +11,10 @@ from mfcc.mfcc import get_mfcc_from_file_list
 from models.mlp import mlp
 from models.cnn import cnn
 import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from helpers.generate_classes_distributions import generate_classes_distributions
 from helpers.generate_confusion_matrix import generate__confusion_matrix
+from helpers.plot_history import plot_history
 
 ## PEGA E AJUSTA OS DADOS INICIAIS =============================================
 # Caminho para a pasta principal contendo subpastas (cada subpasta é uma classe)
@@ -50,19 +52,23 @@ print(f"Classes únicas: {set(labels)}")
 x_train_mfcc = get_mfcc_from_file_list(x_train)
 x_test_mfcc = get_mfcc_from_file_list(x_test)
 
-print(f"MFCCs de treino: {len(x_train_mfcc)}")
-print(f"MFCCs de teste: {len(x_test_mfcc)}")
+# print(f"MFCCs de treino: {len(x_train_mfcc)}")
+# print(f"MFCCs de teste: {len(x_test_mfcc)}")
 
-# retorna as classes reiais e as classes previstas
-y_true_classes, y_pred_classes = mlp(x_train_mfcc, y_train, x_test_mfcc, y_test)
+# retorna as classes reais e as classes previstas
+y_true_classes, y_pred_classes, history = mlp(x_train_mfcc, y_train, x_test_mfcc, y_test)
 # y_true_classes, y_pred_classes = cnn(x_train_mfcc, y_train, x_test_mfcc, y_test)
 
 assert len(set(x_train).intersection(set(x_test))) == 0
 
+class_names = ['belly_pain', 'burping', 'discomfort', 'hungry', 'tired']
+
 # Matrix de confusão
-generate__confusion_matrix(y_true_classes, y_pred_classes)
+generate__confusion_matrix(y_true_classes, y_pred_classes, class_names)
 
 # Distribuição de classes
 generate_classes_distributions(y_train, y_test)
+
+plot_history(history.history)
 
 plt.show()

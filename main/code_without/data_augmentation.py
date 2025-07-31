@@ -4,21 +4,14 @@ import numpy as np
 import random
 import os
 from collections import defaultdict
+import data_augmentation_testes as aug
 
 def apply_augmentation(signal, sr, augmentation_type):
     """Aplica uma transformação de áudio específica"""
     if augmentation_type == 'time_stretch':
-        rate = random.uniform(0.8, 1.2)  # ±20% de velocidade
-        return librosa.effects.time_stretch(signal, rate=rate)
+        return aug.time_stretch(signal, stretch_rate=0.5)
     elif augmentation_type == 'pitch_shift':
-        steps = random.randint(-3, 3)  # ±3 semitons
-        return librosa.effects.pitch_shift(signal, sr=sr, n_steps=steps)
-    elif augmentation_type == 'noise':
-        noise = np.random.normal(0, 0.005, len(signal))  # 0.5% de ruído
-        return signal + noise
-    elif augmentation_type == 'time_shift':
-        shift = random.randint(0, int(sr * 0.3))  # Até 300ms de deslocamento
-        return np.roll(signal, shift)
+        return aug.pitch_scale(signal, sr=sr, num_steps=2)
     else:
         return signal
 
